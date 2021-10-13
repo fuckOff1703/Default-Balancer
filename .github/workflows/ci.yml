@@ -1,0 +1,45 @@
+name: Build Workflow
+
+on: 
+  push:
+    branches:
+    - master
+    tags:
+    - '*'
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  run:
+    name: Run action
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: --- Checkout repository
+      uses: actions/checkout@v1
+    
+    - name: --- Setup SourcePawn Compiler
+      uses: rumblefrog/setup-sp@master
+      with:
+        version: "1.10.x"
+    
+    - name: --- Verify compiler
+      run: |
+        which spcomp
+        mkdir -p plugins
+        spcomp -i$includePath scripting/DefaultBalancer.sp -O2 -v2 -oplugins/DefaultBalancer.smx
+    - name: --- Build project
+      if: startsWith(github.ref, 'refs/tags/')
+      run: |
+        zip -rv DefaultBalancer cfg configs plugins scripting translations
+    
+    - name: --- Release
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        draft: true
+        name: Release
+        body: Release text
+        files: |
+          DefaultBalancer.zip
