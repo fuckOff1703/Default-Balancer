@@ -4,11 +4,11 @@
     {
         "Signatures"
         {
-            "CCSGameRules::ProcessAutoBalance" // https://gitlab.com/SomethingFromSomewhere/cstrike15_src/-/blob/master/game/shared/cstrike15/cs_gamerules.cpp#L12301
+            "CCSGameRules::BalanceTeams" // https://gitlab.com/SomethingFromSomewhere/cstrike15_src/-/blob/master/game/shared/cstrike15/cs_gamerules.cpp#L12340
             {
                 "library"   "server"
                 "linux"     "\x55\x89\xE5\x57\x56\x53\x83\xEC\x3C\x8B\x55\x08\x89\x14\x24"
-                "windows"   "\x55\x8B\xEC\x83\xEC\x1C\xA1\x30"
+                "windows"   "\x55\x8B\xEC\x83\xEC\x1C\xA1\x2A\x2A\x2A\x2A\x53\x8B\xD9\x89\x5D\xEC"
             }
         }
     }
