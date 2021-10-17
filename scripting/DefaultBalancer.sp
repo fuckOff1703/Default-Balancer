@@ -4,14 +4,14 @@
 #include <sourcemod>
 #include <sdktools>
 
-Handle  g_hProcessAutoBalance;
+Handle  g_hBalanceTeams;
 ConVar	g_cvAutobalance;
 
 public Plugin myinfo =
 {
 	name	=	"Default Balancer",
 	author	=	"OkyHp",
-	version	=	"1.0.0",
+	version	=	"1.0.1",
 	url		=	"OkyHek#2441"
 };
 
@@ -36,13 +36,13 @@ public void OnPluginStart()
 	}
 
 	StartPrepSDKCall(SDKCall_GameRules);
-	PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, "CCSGameRules::ProcessAutoBalance");
+	PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, "CCSGameRules::BalanceTeams");
 	hGameData.Close();
 
-	g_hProcessAutoBalance = EndPrepSDKCall();
-	if (!g_hProcessAutoBalance)
+	g_hBalanceTeams = EndPrepSDKCall();
+	if (!g_hBalanceTeams)
 	{
-		SetFailState("Failed to setup CCSGameRules::ProcessAutoBalance");
+		SetFailState("Failed to setup CCSGameRules::BalanceTeams");
 		return;
 	}
 
@@ -58,5 +58,5 @@ public void OnMapStart()
 
 void Event_RoundPreStart(Event hEvent, const char[] sEvName, bool bDontBroadcast)
 {
-	SDKCall(g_hProcessAutoBalance);
+	SDKCall(g_hBalanceTeams);
 }
