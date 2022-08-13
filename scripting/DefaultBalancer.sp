@@ -3,23 +3,23 @@
 
 #include <sourcemod>
 #include <sdktools>
+#include <dhooks>
 
-Handle  g_hBalanceTeams;
-ConVar	g_cvAutobalance;
+Handle g_hBalanceTeams;
 
 public Plugin myinfo =
 {
 	name	=	"Default Balancer",
-	author	=	"OkyHp",
-	version	=	"1.0.1",
+	author	=	"OkyHp & fuckOff1703",
+	version	=	"1.0.2",
 	url		=	"OkyHek#2441"
 };
 
 public APLRes AskPluginLoad2(Handle hMyself, bool bLate, char[] szError, int iErr_max)
 {
-	if(GetEngineVersion() != Engine_CSGO)
+	if(GetEngineVersion() != Engine_CSGO && GetEngineVersion() != Engine_CSS)
 	{
-		strcopy(szError, iErr_max, "This plugin works only on CS:GO!");
+		strcopy(szError, iErr_max, "This plugin works only on CS:GO and CS:S!");
 		return APLRes_SilentFailure;
 	}
 	
@@ -32,31 +32,40 @@ public void OnPluginStart()
 	if (!hGameData)
 	{
 		SetFailState("Failed to load DefaultBalancer gamedata.");
-		return;
 	}
 
 	StartPrepSDKCall(SDKCall_GameRules);
 	PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, "CCSGameRules::BalanceTeams");
+
+	DynamicDetour hDetourRestartRound = DynamicDetour.FromConf(hGameData, "CCSGameRules::RestartRound");
+
 	hGameData.Close();
 
 	g_hBalanceTeams = EndPrepSDKCall();
+	
 	if (!g_hBalanceTeams)
 	{
 		SetFailState("Failed to setup CCSGameRules::BalanceTeams");
-		return;
 	}
 
-	HookEvent("round_prestart", Event_RoundPreStart, EventHookMode_PostNoCopy);
+	if(!hDetourRestartRound)
+	{
+		SetFailState("Failed to setup detour for CCSGameRules::RestartRound");
+	}
 
-	g_cvAutobalance = FindConVar("mp_autoteambalance");
+	if(!hDetourRestartRound.Enable(Hook_Pre, RestartRound_Callback))
+	{
+		SetFailState("Failed to enable detour for CCSGameRules::RestartRound");
+	}
 }
 
-public void OnMapStart()
+public void OnConfigsExecuted()
 {
-	g_cvAutobalance.IntValue = 0;
+	FindConVar("mp_autoteambalance").IntValue = 0;
 }
 
-void Event_RoundPreStart(Event hEvent, const char[] sEvName, bool bDontBroadcast)
+public MRESReturn RestartRound_Callback()
 {
 	SDKCall(g_hBalanceTeams);
+	return MRES_Ignored;
 }

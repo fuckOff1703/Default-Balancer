@@ -1,10 +1,31 @@
 "Games"
 {
-    "csgo"
+	"#default"
+	{
+		"Functions"
+		{
+			"CCSGameRules::RestartRound"
+			{
+				"signature"		"CCSGameRules::RestartRound"
+				"callconv"		"thiscall"
+				"return"		"void"
+				"this"			"ignore"
+			}
+		}
+	}
+
+	"csgo"
     {
         "Signatures"
         {
-            "CCSGameRules::BalanceTeams" // https://gitlab.com/SomethingFromSomewhere/cstrike15_src/-/blob/master/game/shared/cstrike15/cs_gamerules.cpp#L12340
+			"CCSGameRules::RestartRound"
+			{
+				"library"   "server"
+				"linux"     "idk how search signatures in csgo"
+				"windows"   "idk how search signatures in csgo"
+			}
+
+            "CCSGameRules::BalanceTeams"
             {
                 "library"   "server"
                 "linux"     "\x55\x89\xE5\x57\x56\x53\x83\xEC\x3C\x8B\x55\x08\x89\x14\x24"
@@ -12,4 +33,22 @@
             }
         }
     }
+
+	"cstrike"
+	{
+		"Signatures"
+		{
+			"CCSGameRules::RestartRound"
+			{
+				"library"   "server"
+				"linux"     "@_ZN12CCSGameRules12RestartRoundEv"
+			}
+
+			"CCSGameRules::BalanceTeams"
+			{
+				"library"   "server"
+				"linux"     "@_ZN12CCSGameRules12BalanceTeamsEv"
+			}
+		}
+	}
 }
